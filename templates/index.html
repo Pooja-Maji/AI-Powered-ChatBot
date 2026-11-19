@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Customer Support Chatbot</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="chat-wrapper">
+        <!-- Top Navigation Header -->
+        <header class="chat-header">
+            <div class="bot-profile">
+                <div class="avatar-ring">
+                    <div class="avatar">
+                        <i class="fa-solid fa-robot"></i>
+                    </div>
+                    <span class="status-indicator" title="Bot Online"></span>
+                </div>
+                <div class="bot-info">
+                    <h1>Nova AI Support</h1>
+                    <p class="bot-subtitle">
+                        <span>● Intelligent NLP Assistant</span>
+                        <span class="pill-badge" id="latencyBadge">Fast NLP</span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="header-actions">
+                <button id="toggleInspectorBtn" class="btn-icon" title="Toggle Intent & NLP Inspector">
+                    <i class="fa-solid fa-code"></i>
+                    <span class="btn-label">Inspector</span>
+                </button>
+                <button id="resetChatBtn" class="btn-icon" title="Reset Session Context">
+                    <i class="fa-solid fa-rotate-right"></i>
+                    <span class="btn-label">Reset</span>
+                </button>
+                <a href="/admin" class="btn-icon btn-admin" title="View Interaction Logs & Dashboard">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span class="btn-label">Logs</span>
+                </a>
+            </div>
+        </header>
+
+        <!-- Developer / NLP Inspector Panel (Collapsible) -->
+        <div id="inspectorPanel" class="inspector-panel hidden">
+            <div class="inspector-header">
+                <span><i class="fa-solid fa-brain"></i> NLP Live Diagnostics</span>
+                <span id="sessionDisplay" class="session-tag">Session: Initializing...</span>
+            </div>
+            <div class="inspector-grid">
+                <div class="inspect-item">
+                    <span class="label">Intent:</span>
+                    <span id="inspectIntent" class="val">-</span>
+                </div>
+                <div class="inspect-item">
+                    <span class="label">Confidence:</span>
+                    <span id="inspectConfidence" class="val">-</span>
+                </div>
+                <div class="inspect-item">
+                    <span class="label">Sentiment:</span>
+                    <span id="inspectSentiment" class="val">-</span>
+                </div>
+                <div class="inspect-item">
+                    <span class="label">Dialog State:</span>
+                    <span id="inspectState" class="val">default</span>
+                </div>
+                <div class="inspect-item">
+                    <span class="label">Latency:</span>
+                    <span id="inspectLatency" class="val">0 ms</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Messages Container -->
+        <main class="chat-messages" id="chatContainer">
+            <!-- Bot Greeting Message -->
+            <div class="message-row bot-row">
+                <div class="msg-avatar"><i class="fa-solid fa-robot"></i></div>
+                <div class="msg-bubble-wrapper">
+                    <div class="msg-bubble">
+                        <p>Hello! I am <strong>Nova</strong>, your AI customer support assistant powered by Natural Language Processing.</p>
+                        <p>How can I assist you today? You can ask me about:</p>
+                        <ul class="intro-list">
+                            <li><i class="fa-solid fa-box"></i> <strong>Order Tracking:</strong> Ask <em>"Track order ORD-1001"</em></li>
+                            <li><i class="fa-solid fa-rotate-left"></i> <strong>Returns & Refunds:</strong> <em>"What is your return policy?"</em></li>
+                            <li><i class="fa-solid fa-truck"></i> <strong>Shipping:</strong> <em>"How long does delivery take?"</em></li>
+                            <li><i class="fa-solid fa-credit-card"></i> <strong>Payments:</strong> <em>"What payment methods do you accept?"</em></li>
+                            <li><i class="fa-solid fa-headset"></i> <strong>Human Support:</strong> <em>"Speak to an agent"</em></li>
+                        </ul>
+                    </div>
+                    <span class="msg-time" id="initialTime">Just now</span>
+                </div>
+            </div>
+        </main>
+
+        <!-- Typing Indicator -->
+        <div id="typingIndicator" class="typing-indicator hidden">
+            <span></span><span></span><span></span>
+            <small>Nova is processing...</small>
+        </div>
+
+        <!-- Quick Reply Suggestions -->
+        <div class="quick-replies" id="quickReplies">
+            <button class="chip" data-query="Where is my order?"><i class="fa-solid fa-magnifying-glass"></i> Track Order</button>
+            <button class="chip" data-query="Track order ORD-1001"><i class="fa-solid fa-barcode"></i> Check ORD-1001</button>
+            <button class="chip" data-query="What is your return policy?"><i class="fa-solid fa-rotate-left"></i> Return Policy</button>
+            <button class="chip" data-query="How long does shipping take?"><i class="fa-solid fa-truck-fast"></i> Shipping Times</button>
+            <button class="chip" data-query="What payment methods do you accept?"><i class="fa-solid fa-credit-card"></i> Payment Methods</button>
+            <button class="chip" data-query="I want to speak with a human agent"><i class="fa-solid fa-user-headset"></i> Human Agent</button>
+        </div>
+
+        <!-- Input Box & Controls -->
+        <footer class="chat-footer">
+            <form id="chatForm" class="input-form">
+                <input
+                    type="text"
+                    id="userInput"
+                    class="chat-input"
+                    placeholder="Type your question or order number (e.g. 'Track order ORD-1001')..."
+                    autocomplete="off"
+                    required
+                />
+                <button type="submit" id="sendBtn" class="send-btn" title="Send message">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </form>
+            <div class="footer-note">
+                <span>Fast NLP • Contextual Multi-turn Dialog • SQLite Interaction Logs</span>
+            </div>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+</body>
+</html>

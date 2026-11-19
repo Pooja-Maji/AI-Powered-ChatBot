@@ -1,0 +1,230 @@
+{
+  "intents": [
+    {
+      "tag": "greeting",
+      "patterns": [
+        "hi",
+        "hello",
+        "hey",
+        "good morning",
+        "good evening",
+        "good day",
+        "howdy",
+        "what's up",
+        "is anyone there",
+        "start"
+      ],
+      "responses": [
+        "Hello! Welcome to Customer Support. How can I assist you today?",
+        "Hi there! How may I help you with your order, account, or services today?",
+        "Greetings! I am your AI Support Assistant. What can I do for you?"
+      ],
+      "context_set": ""
+    },
+    {
+      "tag": "goodbye",
+      "patterns": [
+        "bye",
+        "goodbye",
+        "see you later",
+        "have a good day",
+        "that's all",
+        "exit",
+        "quit",
+        "done"
+      ],
+      "responses": [
+        "Thank you for contacting us! Have a wonderful day ahead.",
+        "Goodbye! If you need anything else, feel free to reach back out anytime.",
+        "Glad I could help. Take care and have a great day!"
+      ],
+      "context_set": ""
+    },
+    {
+      "tag": "thanks",
+      "patterns": [
+        "thanks",
+        "thank you",
+        "appreciate it",
+        "thank you so much",
+        "that was helpful",
+        "awesome thank you",
+        "great help"
+      ],
+      "responses": [
+        "You're very welcome! Is there anything else I can assist you with?",
+        "Happy to help! Let me know if you have any more questions.",
+        "My pleasure! Don't hesitate to ask if you need further assistance."
+      ],
+      "context_set": ""
+    },
+    {
+      "tag": "track_order",
+      "patterns": [
+        "where is my order",
+        "track my order",
+        "order status",
+        "check order status",
+        "when will my package arrive",
+        "track package",
+        "delivery status",
+        "has my order shipped",
+        "track shipment"
+      ],
+      "responses": [
+        "I can certainly help you track your package! Please provide your Order ID (for example: ORD-1001 or ORD-1002)."
+      ],
+      "context_set": "awaiting_order_id"
+    },
+    {
+      "tag": "shipping_policy",
+      "patterns": [
+        "how long does shipping take",
+        "what are your shipping options",
+        "delivery time",
+        "do you offer international shipping",
+        "how much is shipping",
+        "shipping cost",
+        "expedited shipping"
+      ],
+      "responses": [
+        "Standard shipping takes 3-5 business days ($4.99 or free on orders over $50). Express shipping takes 1-2 business days ($12.99). We also ship internationally to over 40 countries!"
+      ],
+      "context_set": ""
+    },
+    {
+      "tag": "returns_refunds",
+      "patterns": [
+        "how do i return an item",
+        "i want a refund",
+        "what is your return policy",
+        "can i get my money back",
+        "return procedure",
+        "exchange an item",
+        "how long for refund"
+      ],
+      "responses": [
+        "We offer a 30-day hassle-free return window for unopened or defective items. To start a return, could you tell me your Order ID and the reason for the return?"
+      ],
+      "context_set": "awaiting_return_details"
+    },
+    {
+      "tag": "payment_methods",
+      "patterns": [
+        "what payment methods do you accept",
+        "can i pay with paypal",
+        "do you take apple pay",
+        "credit card options",
+        "how can i pay",
+        "payment options"
+      ],
+      "responses": [
+        "We accept Visa, MasterCard, American Express, PayPal, Apple Pay, Google Pay, and Klarna installment payments at checkout."
+      ],
+      "context_set": ""
+    },
+    {
+      "tag": "account_help",
+      "patterns": [
+        "i forgot my password",
+        "cannot log in",
+        "reset password",
+        "change account email",
+        "how to create account",
+        "locked out of my account"
+      ],
+      "responses": [
+        "To reset your password, visit the login page and click 'Forgot Password'. A secure reset link will be sent to your registered email address immediately."
+      ],
+      "context_set": ""
+    },
+    {
+      "tag": "cancel_order",
+      "patterns": [
+        "cancel my order",
+        "cancel order",
+        "order cancellation",
+        "i want to cancel my order",
+        "stop my shipment",
+        "how to cancel an order",
+        "can i modify my order"
+      ],
+      "responses": [
+        "Orders can be cancelled or modified within 60 minutes of placement from your Account Dashboard. If it has already been processed or shipped, you can simply initiate a free return once delivered."
+      ],
+      "context_set": ""
+    },
+    {
+      "tag": "human_escalation",
+      "patterns": [
+        "talk to a human",
+        "speak with a human",
+        "i want to speak with a human",
+        "speak to someone",
+        "speak with an agent",
+        "contact customer care representative",
+        "i want to talk to a real person",
+        "escalate to representative",
+        "customer support phone number",
+        "live agent please",
+        "human agent",
+        "talk to representative",
+        "operator",
+        "customer care"
+      ],
+      "responses": [
+        "I'd be glad to connect you with a customer support specialist! Our team is available 24/7. Would you like our phone number (1-800-555-0199) or would you prefer me to open an escalated support ticket for you?"
+      ],
+      "context_set": "awaiting_escalation_choice"
+    },
+    {
+      "tag": "hours_location",
+      "patterns": [
+        "what are your business hours",
+        "when are you open",
+        "operating hours",
+        "where are you located",
+        "support hours",
+        "contact details"
+      ],
+      "responses": [
+        "Our digital customer support is available 24/7! Our phone lines operate Monday through Friday from 8:00 AM to 8:00 PM EST. You can also email us at support@example.com."
+      ],
+      "context_set": ""
+    },
+    {
+      "tag": "bot_identity",
+      "patterns": [
+        "who are you",
+        "what is your name",
+        "are you a bot",
+        "are you artificial intelligence",
+        "what can you do",
+        "tell me about yourself"
+      ],
+      "responses": [
+        "I am Nova, your AI-powered customer support assistant! I can help you track orders, answer FAQs on returns and shipping, troubleshoot issues, or connect you with human support."
+      ],
+      "context_set": ""
+    },
+    {
+      "tag": "technical_support",
+      "patterns": [
+        "the item is defective",
+        "my product is not working",
+        "damaged item received",
+        "warranty claim",
+        "troubleshooting",
+        "broken item"
+      ],
+      "responses": [
+        "We are very sorry to hear that! All items come with a 1-year manufacturer warranty. Please provide your Order ID and describe the defect, and we can immediately ship a replacement."
+      ],
+      "context_set": "awaiting_order_id"
+    }
+  ],
+  "fallback": [
+    "I'm not quite sure I understood that. Could you please rephrase or let me know if you are asking about order tracking, returns, shipping, or payment?",
+    "I apologize, but I didn't catch that. You can ask me questions like 'Where is my order?', 'What is your return policy?', or 'Speak to an agent'."
+  ]
+}

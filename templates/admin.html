@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot Analytics & Interaction Logs</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="admin-body">
+    <div class="admin-wrapper">
+        <!-- Admin Navigation -->
+        <header class="admin-header">
+            <div class="admin-title-area">
+                <a href="/" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back to Chat</a>
+                <h1><i class="fa-solid fa-chart-pie"></i> NLP Analytics & Interaction Logs</h1>
+                <p>Real-time SQLite interaction telemetry, intent diagnostics, and session logs</p>
+            </div>
+            <div class="admin-actions">
+                <button id="refreshLogsBtn" class="btn-primary">
+                    <i class="fa-solid fa-arrows-rotate"></i> Refresh Data
+                </button>
+            </div>
+        </header>
+
+        <!-- KPI Metric Cards -->
+        <section class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+                <div class="stat-icon purple"><i class="fa-solid fa-comments"></i></div>
+                <div class="stat-content">
+                    <span class="stat-label">Total Interactions</span>
+                    <h3 id="statTotalLogs">...</h3>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon blue"><i class="fa-solid fa-users"></i></div>
+                <div class="stat-content">
+                    <span class="stat-label">Unique Sessions</span>
+                    <h3 id="statTotalSessions">...</h3>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon green"><i class="fa-solid fa-bullseye"></i></div>
+                <div class="stat-content">
+                    <span class="stat-label">Avg Confidence</span>
+                    <h3 id="statAvgConfidence">...</h3>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon amber"><i class="fa-solid fa-bolt"></i></div>
+                <div class="stat-content">
+                    <span class="stat-label">Avg Latency</span>
+                    <h3 id="statAvgLatency">...</h3>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content Area: Search & Table -->
+        <section class="admin-card">
+            <div class="card-header-bar">
+                <h2><i class="fa-solid fa-database"></i> SQLite User Interaction Logs</h2>
+                <div class="search-box">
+                    <i class="fa-solid fa-search"></i>
+                    <input type="text" id="logSearch" placeholder="Filter by message, session or intent...">
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="data-table" id="logsTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Timestamp</th>
+                            <th>Session</th>
+                            <th>User Query</th>
+                            <th>Bot Response</th>
+                            <th>Intent</th>
+                            <th>Confidence</th>
+                            <th>Sentiment</th>
+                            <th>Latency</th>
+                        </tr>
+                    </thead>
+                    <tbody id="logsTableBody">
+                        <tr>
+                            <td colspan="9" class="loading-cell"><i class="fa-solid fa-spinner fa-spin"></i> Loading interaction logs from SQLite...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pagination-bar">
+                <span id="logCountLabel">Showing 0 logs</span>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        async function fetchStats() {
+            try {
+                const res = await fetch('/api/stats');
+                const data = await res.json();
+                if (data.success && data.stats) {
+                    const s = data.stats;
+                    document.getElementById('statTotalLogs').textContent = s.total_logs;
+                    document.getElementById('statTotalSessions').textContent = s.total_sessions;
+                    document.getElementById('statAvgConfidence').textContent = (s.avg_confidence * 100).toFixed(1) + '%';
+                    document.getElementById('statAvgLatency').textContent = s.avg_latency_ms + ' ms';
+                }
+            } catch (err) {
+                console.error("Failed to fetch stats:", err);
+            }
+        }
+
+        async function fetchLogs() {
+            try {
+                const res = await fetch('/api/logs?limit=50');
+                const data = await res.json();
+                const tbody = document.getElementById('logsTableBody');
+                tbody.innerHTML = '';
+
+                if (data.success && data.logs && data.logs.length > 0) {
+                    document.getElementById('logCountLabel').textContent = `Showing ${data.logs.length} of ${data.total} recorded interactions`;
+
+                    data.logs.forEach(log => {
+                        const tr = document.createElement('tr');
+                        const confPct = Math.round((log.confidence || 0) * 100);
+                        const sentimentClass = log.sentiment === 'positive' ? 'badge-green' : (log.sentiment === 'negative' ? 'badge-red' : 'badge-gray');
+
+                        tr.innerHTML = `
+                            <td>#${log.id}</td>
+                            <td class="time-col">${log.created_at}</td>
+                            <td><code>${log.session_id.substring(0, 10)}...</code></td>
+                            <td class="text-col"><strong>${escapeHtml(log.user_message)}</strong></td>
+                            <td class="text-col">${escapeHtml(log.bot_response)}</td>
+                            <td><span class="badge-intent">${log.intent}</span></td>
+                            <td><span class="badge-conf">${confPct}%</span></td>
+                            <td><span class="badge-sentiment ${sentimentClass}">${log.sentiment || 'neutral'}</span></td>
+                            <td><code>${log.latency_ms || 0} ms</code></td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="9" class="empty-cell">No interaction logs recorded yet. Send messages in the chat to see them live!</td></tr>';
+                    document.getElementById('logCountLabel').textContent = 'Showing 0 logs';
+                }
+            } catch (err) {
+                console.error("Failed to load logs:", err);
+                document.getElementById('logsTableBody').innerHTML = '<tr><td colspan="9" class="error-cell">Failed to load logs from server.</td></tr>';
+            }
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+
+        // Search filter
+        document.getElementById('logSearch').addEventListener('input', function(e) {
+            const query = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('#logsTableBody tr');
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                row.style.display = text.includes(query) ? '' : 'none';
+            });
+        });
+
+        document.getElementById('refreshLogsBtn').addEventListener('click', () => {
+            fetchStats();
+            fetchLogs();
+        });
+
+        // Initial load
+        fetchStats();
+        fetchLogs();
+    </script>
+</body>
+</html>
